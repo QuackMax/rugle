@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en-US">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Google in foreign language</title>
+</head>
+ 
+<body>
+
+<script src="test.js"></script>
+
+<label for="search_terms">Search Terms</label>
+<input type="text" id="search_terms" name="search_terms">
+<input type="button" onclick = 
+	"ru_search().then( 
+		json => 
+		{ 
+			window.location.href='https://www-google-com.translate.goog/search?hl=ru&q='+json.translatedText+'&_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en-US&_x_tr_pto=wapp';
+		})" 
+	 value="Search">  
+
+</body> 
+ 
+</html>
