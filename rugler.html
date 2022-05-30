@@ -10,7 +10,7 @@
 <body>
 
 <script>
-async function ru_search()
+async function translate_search_terms()
 {
 	var search_terms = document.getElementById('search_terms').value;
 	const res = await fetch("https://translate.argosopentech.com/translate", {
@@ -28,7 +28,7 @@ async function ru_search()
 	
 function translate_ru_search()
 {
-	ru_search().then( 
+	translate_search_terms().then( 
 			json => 
 			{ 
 				window.location.href='https://www-google-com.translate.goog/search?hl=ru&q='+json.translatedText+'&_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en-US&_x_tr_pto=wapp';
