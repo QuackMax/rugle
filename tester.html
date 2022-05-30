@@ -10,8 +10,9 @@
 <body>
 
 <script>
-async function ru_search(search_terms)
+async function ru_search()
 {
+	var search_terms = document.getElementById('search_terms').value;
 	const res = await fetch("https://translate.argosopentech.com/translate", {
 		method: "POST",
 		body: JSON.stringify({
@@ -29,7 +30,7 @@ async function ru_search(search_terms)
 <label for="search_terms">Search Terms</label>
 <input type="text" id="search_terms" name="search_terms">
 <input type="button" onclick = 
-	"ru_search(" + search_terms + ").then( 
+	"ru_search().then( 
 		json => 
 		{ 
 			window.location.href='https://www-google-com.translate.goog/search?hl=ru&q='+json.translatedText+'&_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en-US&_x_tr_pto=wapp';
