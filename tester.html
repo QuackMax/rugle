@@ -9,7 +9,22 @@
  
 <body>
 
-<script src="test.js"></script>
+<script>
+async function ru_search()
+{
+	const res = await fetch("https://translate.argosopentech.com/translate", {
+		method: "POST",
+		body: JSON.stringify({
+			q: "test",
+			source: "en",
+			target: "ru"
+		}),
+		headers: { "Content-Type": "application/json" }
+	});
+
+	return (await res.json())
+}
+</script>
 
 <label for="search_terms">Search Terms</label>
 <input type="text" id="search_terms" name="search_terms">
