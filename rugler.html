@@ -5,43 +5,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Search Google without the language barrier</title>
+	
+	<script>
+		const libretranslate_server = "https://translate.terraprint.co";
+		
+		async function translate_search_terms(search_terms, from_lang, to_lang)
+		{		
+			const res = await fetch(libretranslate_server + "/translate", {
+				method: "POST",
+				body: JSON.stringify({
+					q: search_terms,
+					source: from_lang,
+					target: to_lang
+				}),
+				headers: { "Content-Type": "application/json" }
+			});
+
+			return (await res.json())
+		}
+			
+		function translate_search_retranslate()
+		{
+			var search_terms = document.getElementById('search_terms').value.replace(" ", "+");
+			var from_lang = document.getElementById('from_language_dropdown').value;
+			var to_lang = document.getElementById('to_language_dropdown').value;
+			
+			translate_search_terms(search_terms, from_lang, to_lang).then( 
+					json => 
+					{ 
+						window.location.href='https://www-google-com.translate.goog/search?hl=' + 
+									to_lang + '&q=' + json.translatedText + 
+									'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
+					})
+		}
+
+		async function fetch_languages()
+		{
+			const res = await fetch(libretranslate_server + "/languages")			
+			return (await res.json())
+		}
+
+		function update_dropdown(strName, langs)	
+		{
+			let dropdown = document.getElementById(strName);
+			dropdown.length = 0;
+
+			let option;
+					
+			for (let i = 0; i < langs.length; i++) 
+			{
+			  option = document.createElement('option');
+			  option.text = langs[i].name;
+			  option.value = langs[i].code;
+			  dropdown.add(option);
+			}
+			
+			dropdown.selectedIndex = 0;
+		}
+
+		function update_dropdowns()
+		{
+			fetch_languages().then(
+				json =>
+				{
+					update_dropdown('from_language_dropdown', json);
+					update_dropdown('to_language_dropdown', json);
+				}
+			);
+		}
+	</script>
 </head>
  
-<body>
+<body onload="update_dropdowns()">
 
-<script>
-async function translate_search_terms()
-{
-	var search_terms = document.getElementById('search_terms').value;
-	const res = await fetch("https://translate.argosopentech.com/translate", {
-		method: "POST",
-		body: JSON.stringify({
-			q: search_terms,
-			source: "en",
-			target: "ru"
-		}),
-		headers: { "Content-Type": "application/json" }
-	});
-
-	return (await res.json())
-}
-	
-function translate_ru_search()
-{
-	translate_search_terms().then( 
-			json => 
-			{ 
-				window.location.href='https://www-google-com.translate.goog/search?hl=ru&q='+json.translatedText+'&_x_tr_sl=ru&_x_tr_tl=en&_x_tr_hl=en-US&_x_tr_pto=wapp';
-			})
-}
-	
-</script>
-
-<form>
-	<label for="search_terms">Search Terms</label>
+<form action="javascript:translate_search_retranslate()" method="GET">
+	<label for="from_language_dropdown">From</label>
+	<select id="from_language_dropdown" name="from_language"></select>
+	<label for="to_language_dropdown">To</label>
+	<select id="to_language_dropdown" name="to_language"></select>
 	<input type="text" id="search_terms" name="search_terms">
-	<input type="button" onclick = "translate_ru_search()" 
-		 value="Search">
+	<input type="submit" value="Search">
 </form>
 
 </body> 
