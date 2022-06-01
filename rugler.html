@@ -58,28 +58,45 @@
 		
 		function search_retranslate()
 		{
-			var search_terms = document.getElementById('search_terms').value;
+			var translated_search_terms = document.getElementById('translated_search_terms').value;
 			var from_lang = document.getElementById('from_language_dropdown').value;
 			<!-- This is a gross trick -- inspecting translator shows that R is the right parameter for selected language. --!>
 			<!-- A documented variable or function call would be infinitely more desireable --!>
 			var to_lang = translator.R;
 			
 			window.location.href='https://www-google-com.translate.goog/search?hl=' + 
-				to_lang + '&q=' + search_terms + 
+				to_lang + '&q=' + translated_search_terms + 
 				'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
+		}
+		
+		function copyToTranslateBox()
+		{
+			var search_terms = document.getElementById('search_terms').value;
+			document.getElementById('translated_search_terms').value = search_terms;
 		}
 	</script>
 </head>
  
 <body onload="update_dropdowns();">
 
+
 <form action="javascript:search_retranslate()" method="GET">
-	<label for="from_language_dropdown" class="notranslate">From</label>
-	<select id="from_language_dropdown" name="from_language" class="notranslate" onchange="googleTranslateElementInit();"></select></br>
-	<label for="google_translate_element" class="notranslate">To</label>
-	<div id="google_translate_element"></div>
-	<input type="text" id="search_terms" name="search_terms" class="translate">
-	<input type="submit" value="Search" class="notranslate">
+	<table>
+	<tbody>
+	  <tr>
+		<td><label for="from_language_dropdown" class="notranslate">From</label></td>
+		<td><select id="from_language_dropdown" name="from_language" class="notranslate" onchange="googleTranslateElementInit();"></select></td>
+		<td><input type="text" id="search_terms" name="search_terms" class="notranslate" onfocusout="copyToTranslateBox()"></td>
+		<td></td>
+	  </tr>
+	  <tr>
+		<td><label for="google_translate_element" class="notranslate">To</label></td>
+		<td><div id="google_translate_element" style="display: inline-block;"></div></td>
+		<td><input type="text" id="translated_search_terms" name="translated_search_terms" class="translate"></td>
+		<td><input type="submit" value="Search" class="notranslate"></td>
+	  </tr>
+	</tbody>
+	</table>
 </form>
 
 </body> 
