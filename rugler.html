@@ -5,7 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Search Google without the language barrier</title>
-	
+	<div id="google_translate_element"></div>
+<script> 
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'en'
+  }, 'google_translate_element');
+}
+</script>
+<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
+
+
 	<script>
 		const libretranslate_server = "https://translate.terraprint.co";
 		
@@ -78,14 +88,14 @@
  
 <body onload="update_dropdowns()">
 
-<form action="javascript:translate_search_retranslate()" method="GET">
+<!--form action="javascript:translate_search_retranslate()" method="GET"--!>
 	<label for="from_language_dropdown">From</label>
 	<select id="from_language_dropdown" name="from_language"></select>
 	<label for="to_language_dropdown">To</label>
 	<select id="to_language_dropdown" name="to_language"></select>
 	<input type="text" id="search_terms" name="search_terms">
 	<input type="submit" value="Search">
-</form>
+<!--/form--!>
 
 </body> 
  
