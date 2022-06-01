@@ -2,56 +2,16 @@
 <html lang="en-US">
  
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Search Google without the language barrier</title>
-	<div id="google_translate_element"></div>
-<script> 
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement({
-    pageLanguage: 'en'
-  }, 'google_translate_element');
-}
-</script>
-<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
+    <title class="notranslate">Search Google without the language barrier</title>
 
+	<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
 
-	<script>
-		const libretranslate_server = "https://translate.terraprint.co";
+	<script>	
+		let translator;
 		
-		async function translate_search_terms(search_terms, from_lang, to_lang)
-		{		
-			const res = await fetch(libretranslate_server + "/translate", {
-				method: "POST",
-				body: JSON.stringify({
-					q: search_terms,
-					source: from_lang,
-					target: to_lang
-				}),
-				headers: { "Content-Type": "application/json" }
-			});
-
-			return (await res.json())
-		}
-			
-		function translate_search_retranslate()
-		{
-			var search_terms = document.getElementById('search_terms').value.replace(" ", "+");
-			var from_lang = document.getElementById('from_language_dropdown').value;
-			var to_lang = document.getElementById('to_language_dropdown').value;
-			
-			translate_search_terms(search_terms, from_lang, to_lang).then( 
-					json => 
-					{ 
-						window.location.href='https://www-google-com.translate.goog/search?hl=' + 
-									to_lang + '&q=' + json.translatedText + 
-									'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
-					})
-		}
-
 		async function fetch_languages()
 		{
-			const res = await fetch(libretranslate_server + "/languages")			
+			const res = await fetch("https://raw.githubusercontent.com/QuackMax/rugle/QuackMax-googletranslate/supportedLanguages.json")			
 			return (await res.json())
 		}
 
@@ -66,7 +26,7 @@ function googleTranslateElementInit() {
 			{
 			  option = document.createElement('option');
 			  option.text = langs[i].name;
-			  option.value = langs[i].code;
+			  option.value = langs[i].language;
 			  dropdown.add(option);
 			}
 			
@@ -78,24 +38,49 @@ function googleTranslateElementInit() {
 			fetch_languages().then(
 				json =>
 				{
-					update_dropdown('from_language_dropdown', json);
-					update_dropdown('to_language_dropdown', json);
+					update_dropdown('from_language_dropdown', json["sourceLanguages"]);
 				}
 			);
+		}
+		
+		function googleTranslateElementInit() {
+			var from_lang = document.getElementById('from_language_dropdown').value;
+			
+			translator = new google.translate.TranslateElement({pageLanguage: from_lang}, 'google_translate_element');
+		}
+		
+		function googleSwitchFromPageLanguage()
+		{
+			<!-- This is a gross trick -- inspecting translator shows that aa is the right parameter for pageLanguage. --!>
+			<!-- A documented variable or function call would be infinitely more desireable --!>
+			translator.aa = document.getElementById('from_language_dropdown').value;
+		}
+		
+		function search_retranslate()
+		{
+			var search_terms = document.getElementById('search_terms').value;
+			var from_lang = document.getElementById('from_language_dropdown').value;
+			<!-- This is a gross trick -- inspecting translator shows that R is the right parameter for selected language. --!>
+			<!-- A documented variable or function call would be infinitely more desireable --!>
+			var to_lang = translator.R;
+			
+			window.location.href='https://www-google-com.translate.goog/search?hl=' + 
+				to_lang + '&q=' + search_terms + 
+				'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
 		}
 	</script>
 </head>
  
-<body onload="update_dropdowns()">
+<body onload="update_dropdowns();">
 
-<!--form action="javascript:translate_search_retranslate()" method="GET"--!>
-	<label for="from_language_dropdown">From</label>
-	<select id="from_language_dropdown" name="from_language"></select>
-	<label for="to_language_dropdown">To</label>
-	<select id="to_language_dropdown" name="to_language"></select>
-	<input type="text" id="search_terms" name="search_terms">
-	<input type="submit" value="Search">
-<!--/form--!>
+<form action="javascript:search_retranslate()" method="GET">
+	<label for="from_language_dropdown" class="notranslate">From</label>
+	<select id="from_language_dropdown" name="from_language" class="notranslate" onchange="googleTranslateElementInit();"></select></br>
+	<label for="google_translate_element" class="notranslate">To</label>
+	<div id="google_translate_element"></div>
+	<input type="text" id="search_terms" name="search_terms" class="translate">
+	<input type="submit" value="Search" class="notranslate">
+</form>
 
 </body> 
  
