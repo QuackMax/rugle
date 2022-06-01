@@ -4,36 +4,50 @@
 <head>
     <title class="notranslate">Search Google without the language barrier</title>
 
-	<script src="http://translate.google.com/translate_a/element.js?cb=TranslateElement_init"></script> 
+	<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
 
 	<script>	
 		let translator;
 		
+		function googleTranslateElementInit() {
+			var from_lang = document.getElementById('from_language_dropdown').value;
+			
+			translator = new google.translate.TranslateElement({pageLanguage: from_lang, layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL}, 'google_translate_element');
+		}
+		
 		async function fetch_languages()
 		{
-			const res = await fetch("https://raw.githubusercontent.com/QuackMax/rugle/QuackMax-googletranslate/supportedLanguages.json")			
+			// key stolen from translate box when it fetches its own supported languages, TBD whether it expires
+			const res = await fetch(
+				"https://translate-pa.googleapis.com/v1/supportedLanguages?client=te&display_language=en-US&key=AIzaSyBWDj0QJvVIx8XOhRegXX5_SrRWxhT5Hs4")			
 			return (await res.json())
 		}
 
 		function update_dropdown(strName, langs)	
 		{
 			let dropdown = document.getElementById(strName);
-			dropdown.length = 0;
-
+			
 			let option;
-					
+			let english_idx;
+			
 			for (let i = 0; i < langs.length; i++) 
 			{
 			  option = document.createElement('option');
 			  option.text = langs[i].name;
 			  option.value = langs[i].language;
 			  dropdown.add(option);
+			  
+			  if(langs[i].name == "English")
+			  {
+				english_idx = i;
+			  }
 			}
-			
-			dropdown.selectedIndex = 0;
+
+			dropdown.selectedIndex = english_idx;
+
 		}
 
-		function update_dropdowns()
+		function populate_from_langs()
 		{
 			fetch_languages().then(
 				json =>
@@ -42,34 +56,19 @@
 				}
 			);
 		}
-		
-		function TranslateElement_init() {
-			var from_lang = document.getElementById('from_language_dropdown').value;
 			
-			translator = new google.translate.TranslateElement({pageLanguage: from_lang}, 'google_translate_element');
-		}
-		
-		function TranslateElement_switch_from_page_language()
-		{
-			<!-- This is a gross trick -- inspecting translator shows that aa is the right parameter for pageLanguage. --!>
-			<!-- A documented variable or function call would be infinitely more desireable --!>
-			translator.aa = document.getElementById('from_language_dropdown').value;
-		}
-		
 		function search_retranslate()
 		{
 			var translated_search_terms = document.getElementById('translated_search_terms').value;
 			var from_lang = document.getElementById('from_language_dropdown').value;
-			<!-- This is a gross trick -- inspecting translator shows that R is the right parameter for selected language. --!>
-			<!-- A documented variable or function call would be infinitely more desireable --!>
-			var to_lang = translator.R;
+			var to_lang = document.querySelector('html').getAttribute('lang');
 			
 			window.location.href='https://www-google-com.translate.goog/search?hl=' + 
 				to_lang + '&q=' + translated_search_terms + 
 				'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
 		}
 		
-		function copy_search_terms()
+		function copy_search_term_to_translate_box()
 		{
 			var search_terms = document.getElementById('search_terms').value;
 			document.getElementById('translated_search_terms').value = search_terms;
@@ -77,7 +76,7 @@
 	</script>
 </head>
  
-<body onload="update_dropdowns();">
+<body onload="populate_from_langs();">
 
 
 <form action="javascript:search_retranslate()" method="GET">
@@ -85,13 +84,13 @@
 	<tbody>
 	  <tr>
 		<td><label for="from_language_dropdown" class="notranslate">From</label></td>
-		<td><select id="from_language_dropdown" name="from_language" class="notranslate" onchange="TranslateElement_switch_from_page_language();"></select></td>
-		<td><input type="text" id="search_terms" name="search_terms" class="notranslate" onfocusout="copy_search_terms();"></td>
+		<td><select id="from_language_dropdown" name="from_language" class="notranslate" onchange="googleTranslateElementInit();"></select></td>
+		<td><input type="text" id="search_terms" name="search_terms" class="notranslate" onfocusout="copy_search_term_to_translate_box()"></td>
 		<td></td>
 	  </tr>
 	  <tr>
 		<td><label for="google_translate_element" class="notranslate">To</label></td>
-		<td><div id="google_translate_element" style="display: inline-block;"></div></td>
+		<td><div id="google_translate_element"></div></td>
 		<td><input type="text" id="translated_search_terms" name="translated_search_terms" class="translate"></td>
 		<td><input type="submit" value="Search" class="notranslate"></td>
 	  </tr>
