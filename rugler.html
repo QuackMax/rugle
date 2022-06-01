@@ -4,7 +4,7 @@
 <head>
     <title class="notranslate">Search Google without the language barrier</title>
 
-	<script src="http://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> 
+	<script src="http://translate.google.com/translate_a/element.js?cb=TranslateElement_init"></script> 
 
 	<script>	
 		let translator;
@@ -43,13 +43,13 @@
 			);
 		}
 		
-		function googleTranslateElementInit() {
+		function TranslateElement_init() {
 			var from_lang = document.getElementById('from_language_dropdown').value;
 			
 			translator = new google.translate.TranslateElement({pageLanguage: from_lang}, 'google_translate_element');
 		}
 		
-		function googleSwitchFromPageLanguage()
+		function TranslateElement_switch_from_page_language()
 		{
 			<!-- This is a gross trick -- inspecting translator shows that aa is the right parameter for pageLanguage. --!>
 			<!-- A documented variable or function call would be infinitely more desireable --!>
@@ -69,7 +69,7 @@
 				'&_x_tr_sl=' + to_lang + '&_x_tr_tl=' + from_lang + '&_x_tr_pto=wapp';
 		}
 		
-		function copyToTranslateBox()
+		function copy_search_terms()
 		{
 			var search_terms = document.getElementById('search_terms').value;
 			document.getElementById('translated_search_terms').value = search_terms;
@@ -85,8 +85,8 @@
 	<tbody>
 	  <tr>
 		<td><label for="from_language_dropdown" class="notranslate">From</label></td>
-		<td><select id="from_language_dropdown" name="from_language" class="notranslate" onchange="googleTranslateElementInit();"></select></td>
-		<td><input type="text" id="search_terms" name="search_terms" class="notranslate" onfocusout="copyToTranslateBox()"></td>
+		<td><select id="from_language_dropdown" name="from_language" class="notranslate" onchange="TranslateElement_switch_from_page_language();"></select></td>
+		<td><input type="text" id="search_terms" name="search_terms" class="notranslate" onfocusout="copy_search_terms();"></td>
 		<td></td>
 	  </tr>
 	  <tr>
